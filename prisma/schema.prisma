@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Student {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // Store hashed passwords for JWT auth
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 1:1 Relationship with Profile
+  profile   Profile?
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  avatarUrl String?  // Stores the image URL/path (e.g., from Uploadthing, Cloudinary, or local public folder)
+  bio       String?
+  phone     String?
+  
+  // Relation fields
+  studentId String   @unique
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
